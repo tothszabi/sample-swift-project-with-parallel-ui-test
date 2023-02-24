@@ -103,6 +103,7 @@ class BullsEyeUITests: XCTestCase {
       let unixTime = Date.timeIntervalBetween1970AndReferenceDate
       self.attachScreenshot(with: "\(unixTime)")
     }
+    timer.fire()
     
     app.buttons["start over"].tap()
         
