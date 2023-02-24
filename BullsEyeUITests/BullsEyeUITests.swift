@@ -62,6 +62,89 @@ class BullsEyeUITests: XCTestCase {
       XCTAssertFalse(typeLabel.exists)
     }
   }
+  
+  func testComplexTest() {
+    app.buttons["start over"].tap()
+    
+    attachScreenshot(with: "Start over tapped")
+    
+    let slideButton = app.segmentedControls.buttons["Slide"]
+    if slideButton.isSelected == false {
+      slideButton.tap()
+      
+      attachScreenshot(with: "Slide button tapped")
+      
+      XCTAssertTrue(slideButton.isSelected)
+    }
+    
+    app.sliders["Main Slider"].adjust(toNormalizedSliderPosition: 0.9)
+    
+    attachScreenshot(with: "Slider adjusted")
+    
+    app.buttons["hit me!"].tap()
+    
+    attachScreenshot(with: "Hit me tapped")
+    
+    let okButton = app.alerts.element.buttons["OK"];
+    
+    attachScreenshot(with: "Alert appeared")
+    
+    XCTAssertTrue(okButton.exists)
+    
+    okButton.tap()
+    
+    attachScreenshot(with: "Alert closed")
+    
+    XCTAssertFalse(okButton.exists)
+  }
+  
+  func testContiniousScreenshotting() {
+    let timer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { timer in
+      let unixTime = Date.timeIntervalBetween1970AndReferenceDate
+      self.attachScreenshot(with: "\(unixTime)")
+    }
+    
+    app.buttons["start over"].tap()
+        
+    let slideButton = app.segmentedControls.buttons["Slide"]
+    if slideButton.isSelected == false {
+      slideButton.tap()
+      
+      XCTAssertTrue(slideButton.isSelected)
+    }
+    
+    app.sliders["Main Slider"].adjust(toNormalizedSliderPosition: 0.9)
+    
+    app.buttons["hit me!"].tap()
+    
+    let okButton = app.alerts.element.buttons["OK"];
+    
+    XCTAssertTrue(okButton.exists)
+    
+    okButton.tap()
+    
+    XCTAssertFalse(okButton.exists)
+    
+    timer.invalidate()
+  }
+  
+  func attachScreenshot(with message: String) {
+    let fullScreenshot = XCUIScreen.main.screenshot()
+        
+        let screenshotAttachment = XCTAttachment(
+            uniformTypeIdentifier: "public.png",
+            name: "Screenshot-\(UIDevice.current.name)-\(name)-\(message).png",
+            payload: fullScreenshot.pngRepresentation,
+            userInfo: nil)
+            
+        // Usually Xcode will delete attachments after
+        // the test has run; we don't want that!
+        screenshotAttachment.lifetime = .keepAlways
+        
+        // Add the attachment to the test log,
+        // so we can retrieve it later
+        add(screenshotAttachment)
+  }
 }
 
 class BullsEyeUITests2: XCTestCase {
